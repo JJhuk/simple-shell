@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <sys/_types/_pid_t.h>
 
 #include "../builtin.h"
 

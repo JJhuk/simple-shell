@@ -1,0 +1,68 @@
+name: CMake for Ubuntu (amd64, arm64)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'Ubuntu (amd64)'
+            os: ubuntu-latest
+            architecture: amd64
+            c_compiler: gcc
+            cpp_compiler: g++
+          - name: 'Ubuntu (arm64)'
+            os: ubuntu-latest
+            architecture: arm64
+            c_compiler: aarch64-linux-gnu-gcc
+            cpp_compiler: aarch64-linux-gnu-g++
+
+    runs-on: ${{ matrix.os }}
+    name: Build on ${{ matrix.name }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up QEMU
+      if: matrix.architecture == 'arm64'
+      uses: docker/setup-qemu-action@v3
+
+    - name: Install ARM64 cross-compiler
+      if: matrix.architecture == 'arm64'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+
+    - name: Set build output directory
+      id: strings
+      shell: bash
+      run: |
+        echo "build-output-dir=${{ github.workspace }}/build-${{ matrix.architecture }}" >> "$GITHUB_OUTPUT"
+
+    - name: Configure CMake
+      run: >
+        cmake -B ${{ steps.strings.outputs.build-output-dir }}
+        -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
+        -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
+        -DCMAKE_BUILD_TYPE=Release
+        -S ${{ github.workspace }}
+
+    - name: Build
+      run: cmake --build ${{ steps.strings.outputs.build-output-dir }} --config Release
+
+    - name: Test
+      working-directory: ${{ steps.strings.outputs.build-output-dir }}
+      run: ctest --build-config Release
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: simple-shell-${{ matrix.architecture }}
+        path: ${{ steps.strings.outputs.build-output-dir }}/simple_shell

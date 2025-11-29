@@ -2,8 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/_types/_pid_t.h>
-#include <sys/proc.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "process/process.h"
