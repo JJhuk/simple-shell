@@ -14,7 +14,7 @@ int sh_launch(const char * const *args) {
     if (pid == 0) {
         // child process
 
-        if (execvp(args[0], args) == -1) {
+        if (execvp(args[0], (char * const *)args) == -1) {
             perror("sh");
         }
 
