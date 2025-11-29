@@ -4,13 +4,15 @@
 #include "args/read.h"
 #include "args/split.h"
 #include "builtin.h"
+#include "history.h"
 #include "process/pipe.h"
 
 void sh_loop(void);
 int sh_execute(const char **args);
 
 int main(void) {
-    // Load Config File
+    // init
+    init_history();
 
     // Run command Loop
     sh_loop();
@@ -24,9 +26,13 @@ void sh_loop(void) {
 
     do {
         printf("> ");
+
         const char *line = sh_read_line();
         const char **args = sh_split_line(line);
+
         status = sh_execute(args);
+
+        add_history(line);
 
         free((void *)line);
         free((void **)args);

@@ -4,7 +4,9 @@
 #include <string.h>
 #include <unistd.h>
 
-const char *builtin_str[] = {"cd", "help", "exit"};
+#include "history.h"
+
+const char *builtin_str[] = {"cd", "help", "exit", "history"};
 
 int sh_cd(const char * const *args) {
     if (args[1] == NULL) {
@@ -41,10 +43,36 @@ int sh_exit(const char * const *args) {
     return 0;
 }
 
+int sh_history(const char * const *args) {
+    if (history_shm == NULL) {
+        printf("History system not initialized.\n");
+        return 1;
+    }
+
+    printf("--- History ---\n");
+
+    int start_index = 0;
+    sem_wait(history_sem);
+
+    if (history_shm->count == HISTORY_SIZE) {
+        // 꽉 찼다면, head가 가리키는 곳이 가장 오래된 데이터입니다.
+        start_index = history_shm->head;
+    }
+
+    for (int i = 0; i < history_shm->count; i++) {
+        const int idx = (start_index + i) % HISTORY_SIZE;
+        printf("%d: %s\n", i + 1, history_shm->commands[idx]);
+    }
+
+    sem_post(history_sem);
+    return 1;
+}
+
 builtin_cmd_type builtin_func[] = {
     &sh_cd,
     &sh_help,
     &sh_exit,
+    &sh_history,
 };
 
 builtin_cmd_type get_builtin_cmd(const char *command) {

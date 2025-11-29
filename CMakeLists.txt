@@ -19,4 +19,6 @@ add_executable(simple_shell main.c
         builtin.h
         process/pipe.c
         process/pipe.h
+        history.c
+        history.h
 )
