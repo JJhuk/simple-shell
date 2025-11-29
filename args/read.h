@@ -1,7 +1,3 @@
-//
-// Created by 이주혁 on 25. 11. 27..
-//
-
 #ifndef SIMPLE_SHELL_READ_H
 
 #define SH_RL_BUFSIZE 1024

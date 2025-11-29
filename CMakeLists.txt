@@ -4,14 +4,16 @@ project(simple_shell C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(simple_shell main.c
-        loop.h
-        loop.c
-        read.c
-        read.h
-        split.c
-        split.h
+        args/read.c
+        args/read.h
+        args/split.c
+        args/split.h
         launch.c
         launch.h
-        builtins.c
-        builtins.h
+        process/process.c
+        process/process.h
+        builtin.c
+        builtin.h
+        process/pipe.c
+        process/pipe.h
 )

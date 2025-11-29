@@ -6,7 +6,9 @@
 #include <sys/proc.h>
 #include <unistd.h>
 
-int sh_launch(char **args) {
+#include "process/process.h"
+
+int sh_launch(const char * const *args) {
     const pid_t pid = fork();
 
     if (pid == 0) {
@@ -23,12 +25,7 @@ int sh_launch(char **args) {
         perror("fork");
     }
     else {
-        // parent process
-
-        int status;
-        do {
-            const pid_t wPid = waitpid(pid, &status, WUNTRACED);
-        } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+        wait_for_pid(pid);
     }
 
     return 1;
