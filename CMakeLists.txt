@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 4.0)
 project(simple_shell C)
 
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+
+add_compile_options(-DLSH_USE_STD_GETLINE)
 
 add_executable(simple_shell main.c
         args/read.c
